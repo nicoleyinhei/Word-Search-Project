@@ -129,7 +129,8 @@ int readLetterGridFromFile(char letterGrid[MAX_GRID][MAX_GRID]) {
          the number of words if successful
          -1 if there is any file reading error */
 int readWordListFromFile(char wordList[MAX_WORDLIST][MAX_WORD]) {
-	int i,a=0;
+	int i=0;
+	int a=0;
 	char filename[MAX_FILENAME];
 	char temp[MAX_WORD];
 	char arr[MAX_WORDLIST*MAX_WORD];
@@ -152,18 +153,10 @@ int readWordListFromFile(char wordList[MAX_WORDLIST][MAX_WORD]) {
 	}
     
     while(!feof(fptr)) {
-    	fscanf(fptr,"%s\n",temp);
-    	strcat(arr,temp);
+    	fscanf(fptr,"%s",temp);
+    	strcpy(wordList[i],temp);
+    	i++;
 	}
-	
-	printf("%s\n",arr);
-	/**
-	while(arr[i]!='\n') {
-		wordList[a][i] = arr[i];
-		i++;
-	}
-	**/
-	//printf("%s",wordList[a]);
 	
 	fclose(fptr);
 
@@ -176,6 +169,7 @@ int readWordListFromFile(char wordList[MAX_WORDLIST][MAX_WORD]) {
 /* Display the letter grid, assume gridSize <= 10 */
 void printLetterGrid(char letterGrid[MAX_GRID][MAX_GRID], int gridSize) {
     int row, col;
+    int i=0;
 
     /* For debugging */
     if(gridSize < 2 || gridSize > MAX_GRID) {
@@ -185,8 +179,18 @@ void printLetterGrid(char letterGrid[MAX_GRID][MAX_GRID], int gridSize) {
     }
 
     printf("### %d x %d Letter Grid ###\n", gridSize, gridSize);
-	printf("  + 0 1 2 3 4\n");
-	printf("+ + + + + + +\n");
+    
+    printf("  +");
+	for(i=0;i<gridSize;i++) {
+		printf(" %d",i);
+	}
+	printf("\n ");
+	
+	for(i=0;i<=gridSize;i++){
+		printf(" +");
+	}
+	printf("\n");
+	
 	for(row=0;row<gridSize;row++){
 		printf("%d + ",row);
 		for(col=0;col<gridSize;col++){
@@ -262,126 +266,159 @@ int checkWordList(char wordList[MAX_WORDLIST][MAX_WORD], int listSize, int match
 int checkLetterGrid(char letterGrid[MAX_GRID][MAX_GRID], int gridSize, char inputWord[MAX_WORD], int matchRow, int matchCol, int matchDirection) {
 	int i;
 	int status;
-	int word[MAX_WORD];
+	int len = strlen(inputWord);
+
+	if(matchDirection == 1) {
+		if(matchRow<=0||matchCol>=gridSize-1) {
+		return -1;
+		}
+		
+		for(i=0;i<len;i++) {
+			if(inputWord[i] == letterGrid[matchRow+i][matchCol-i]){
+				status++;
+			}
+		}
+		if(status == len) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} else if (matchDirection == 2) {
+		if(matchRow>=gridSize-1) {
+			return -1;
+		}
+		
+		for(i=0;i<len;i++) {
+			if(inputWord[i] == letterGrid[matchRow+i][matchCol]) {
+				status++;
+			}
+		}
+		if(status == len) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} else if (matchDirection == 3) {
+		if(matchRow>gridSize||matchCol>=gridSize-1) {
+			return -1;
+		}
+		
+		for(i=0;i<len;i++) {
+			if(inputWord[i] == letterGrid[matchRow+i][matchCol+i]){
+				status++;
+			}
+		}
+		if(status == len) {
+			return 1;
+		} else {
+			return 0;
+		}
+		
+	} else if (matchDirection == 4) {
+		if(matchCol<=0) {
+			return -1;
+		}
+		for(i=0;i<len;i++) {
+			if(inputWord[i] == letterGrid[matchRow][matchCol-i]) {
+				status++;
+			}
+		}
+		if(status == len) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} else if (matchDirection == 6) {
+		if (matchCol>=gridSize-1) {
+			return -1;
+		}
+		for(i=0;i<len;i++) {
+			if(inputWord[i] == letterGrid[matchRow][matchCol+i]) {
+				status++;
+			}
+		}
+		if(status == len) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} else if (matchDirection == 7) {
+		if(matchRow<=0||matchCol<=0) {
+			return -1;
+		}
+		for(i=0;i<len;i++) {
+			if(inputWord[i] == letterGrid[matchRow-i][matchCol-i]) {
+				status++;
+			}
+		}
+		if(status == len) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} else if (matchDirection == 8) {
+		if(matchRow<=0) {
+			return -1;
+		}
+		for(i=0;i<len;i++) {
+			if(inputWord[i] == letterGrid[matchRow-i][matchCol]) {
+				status++;
+			}
+		}
+		if(status == len) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} else if (matchDirection == 9) {
+		if(matchRow<=0||matchCol>=gridSize-1) {
+			return -1;
+		}
+		for(i=0;i<len;i++) {
+			if(inputWord[i] == letterGrid[matchRow-i][matchCol+i]) {
+				status++;
+			}
+		}
+		if(status == len) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} else {
+		return -1;
+	}
+	/* TODO: Complete the function */
 	
-
-/* TODO: Complete the function */
-
-	return status;
+	
 }
 
 
 /* Display the secret table */
 void printSecretTable(char letterGrid[MAX_GRID][MAX_GRID],char wordList[MAX_WORDLIST][MAX_WORD],int gridSize, int listSize) {
+	int i=0,j=0,dir=0,a=0;
+	int len=0;
 	char word[MAX_WORD];
-	char check_ch;
+
 	int status = 0;
-	int row,col,dir;
-	int i=0;
-	int j=0;
-	int a=0;
-	int counter=0;
-	int len;
-	char ch;
-	char ch1;
 	
 	printf("### Secret Table ###\n");
 	
-	strcpy(word,wordList[a]);
-	len = strlen(word);
-	
-	//printf("%d %c %c\n",len,word[a],word[a+1]);
-	/**
-	for(i=0;i<gridSize;i++){
-		for(j=0;j<gridSize;j++){
-		while(a<len-1){	
-			if(ch[0] == letterGrid[i][j]){
-					if(word[a+1] == letterGrid[i-1][j-1]) {
-						dir += 7;
-						status += 1;
-						row += i;
-						col += j;
-					} else if(word[a+1] == letterGrid[i-1][j]) {
-						dir += 8;
-						status += 1;
-						row += i;
-						col += j;
-					} else if (word[a+1] == letterGrid[i-1][j+1]) {
-						dir += 9;
-						status += 1;
-						row += i;
-						col += j;
-					} else if (word[a+1] == letterGrid[i][j-1]) {
-						dir += 4;
-						status += 1;
-						row += i;
-						col += j;
-					} else if (word[a+1] == letterGrid[i][j+1]) {
-						dir += 6;
-						status += 1;
-						row += i;
-						col += j;
-					} else if (word[a+1] == letterGrid[i+1][j-1]) {
-						dir += 1;
-						status += 1;
-						row += i;
-						col += j;
-					} else if (word[a+1] == letterGrid[i+1][j]) {
-						dir += 2;
-						status += 1;
-						row += i;
-						col += j;
-					} else if (word[a+1] == letterGrid[i+1][j+1]) {
-						dir += 3;
-						status += 1;
-						row += i;
-						col += j;
+	for(a=0;a<listSize;a++) {
+		strcpy(word,wordList[a]);
+					
+		for(i=0;i<gridSize;i++) {
+			for(j=0;j<gridSize;j++) {
+				for(dir=1;dir<=9;dir++){
+					
+					status = checkLetterGrid(letterGrid,gridSize,word,i,j,dir);
+					
+					if(status == 1) {
+						printf("%s: R%d C%d D%d\n",word,i,j,dir);
 					}
-		
-				
+				}	
+			}
 		}
-			a++;
-		}
-	
-	
 	}
-	//a++;
-}
-	dir = dir%9;
-	row = row%len;
-	col = col%len;
-	**/
-	
-		for(i=0;i<gridSize;i++){
-			for(j=0;j<gridSize;j++){
-				while(a<len) {
-				if(word[a] == letterGrid[i-a][j+a]){
-						status++;
-						printf("ch = %c a = %d row = %d col = %d status = %d\n",word[a],a,i,j,status);
-						
-				}
-				a++;
-			}
-			}
-			
-		}
-	
-	
-	
-		row = i-1;
-		col = j-len;
-		dir = status;
-	
-	
-	printf("%d\n",status);
-	
-	
-	
-	
-	//if (status == len){
-	//	printf("%s: R%d C%d D%d %d\n",word,row,col,dir,status);
-	//}
-	
 	
 /* TODO: Complete the function */
 }
@@ -391,25 +428,33 @@ void printSecretTable(char letterGrid[MAX_GRID][MAX_GRID],char wordList[MAX_WORD
 /* The main() function */
 int main()
 {
-    int gridSize = 5;
+    int gridSize;
+	/*
+	 = 5;
+	 */
     char letterGrid[MAX_GRID][MAX_GRID];
-	/** = 
+    /*
+	 = 
 	{	[0][0]='T', [0][1]='T', [0][2]='O', [0][3]='E', [0][4]='K',
 		[1][0]='Y', [1][1]='A', [1][2]='Z', [1][3]='C', [1][4]='M',
 		[2][0]='A', [2][1]='E', [2][2]='I', [2][3]='X', [2][4]='N',
 		[3][0]='I', [3][1]='R', [3][2]='Q', [3][3]='R', [3][4]='O',
 		[4][0]='T', [4][1]='T', [4][2]='U', [4][3]='V', [4][4]='J'	
 	};
-	**/
-    int listSize = 3;
+	*/
+    int listSize;
+	/*
+	 = 3;
+	 */
     char wordList[MAX_WORDLIST][MAX_WORD];
-	/** = 
+    /*
+	 = 
 	{
 		[0] = "TRICK",
 		[1] = "OR",
 		[2] = "TREAT"
 	};
-	**/
+	*/
     int matchingStatus[MAX_WORDLIST];			/* Each element should be either 0 (not matched) or 1 (matched) */
     char readData;
     char word[MAX_WORD];
@@ -426,19 +471,17 @@ int main()
 
     printf("Read data from file [Y/N]?");     /* Ask the user whether to read the data from file */
     scanf("%c",&readData);                           /* Read the letter grid and the word list from file or console */
-
     
-	if(readData=='N') {
+	if(readData == 'N') {
             gridSize = readLetterGridFromConsole(letterGrid);
             listSize = readWordListFromConsole(wordList);
     } else if(readData =='Y') {
             gridSize = readLetterGridFromFile(letterGrid);
             listSize = readWordListFromFile(wordList);
     } else {
-    	printf("Wrong input. Please try again.");
+    	printf("Wrong input. Please try again.\n");
+    	exit(1);
 	}
-	
-
 	
     for (i=0;i<listSize;i++){               /* Initialize all elements in the matchingStatus array to 0 */
             matchingStatus[i] = 0;
@@ -452,8 +495,8 @@ int main()
     printWordList(wordList, listSize, matchingStatus);
 
 	/* Read the user input repeatedly until the puzzle finishes */
-	
-    while(fin!=listSize) {						
+	fin = 0;
+    while(fin<listSize) {						
 		printf("Enter the word:\n");
 		scanf("%s",word);
 		
@@ -469,30 +512,36 @@ int main()
 				checkLetter = checkLetterGrid(letterGrid,gridSize,word,row_num,col_num,dir);
 				
 				if(checkLetter == 1) {
-					printf("The word is found!\n");
+					printf("The word is found!\n\n\n");
+					for(i=0;i<listSize;i++) {
+						if(strcmp(word,wordList[i])==0) {
+							matchingStatus[i] = 1;
+							fin++;
+						}
+					}
 				} else if(checkLetter == 0) {
-					printf("The input word cannot be found in the given location.\n");
+					printf("The input word cannot be found in the given location.\n\n\n");
 				} else if (checkLetter == -1) {
-					printf("The search exceeds the boundary of the letter grid.\n");
+					printf("The search exceeds the boundary of the letter grid.\n\n\n");
 				}
 				
 				printLetterGrid(letterGrid, gridSize);
     			printWordList(wordList, listSize, matchingStatus);
     			
 			} else if(checkWord == -1) {
-				printf("The input word is not in the word list.\n");
+				printf("The input word is not in the word list.\n\n\n");
+				printLetterGrid(letterGrid, gridSize);
+    			printWordList(wordList, listSize, matchingStatus);
 			} else if (checkWord == 1) {
-				printf("The input word has already been matched before.\n");
+				printf("The input word has already been matched before.\n\n\n");
+				printLetterGrid(letterGrid, gridSize);
+    			printWordList(wordList, listSize, matchingStatus);
 			}
 		}
 		
-		for(i=0;i<listSize;i++) {
-			fin = fin + matchingStatus[i];
-		}
 	}
-	
-	printWordList(wordList, listSize, matchingStatus);
-	printf("\nYou have finished the puzzle.\nCongratulations!\n");
+
+	printf("You have finished the puzzle.\nCongratulations!\n");
 	
     return 0;
 }
