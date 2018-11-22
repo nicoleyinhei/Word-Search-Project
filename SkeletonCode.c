@@ -25,7 +25,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 /* Macros */
 #define MAX_GRID 10
 #define MAX_WORDLIST 8
@@ -181,14 +180,17 @@ void printLetterGrid(char letterGrid[MAX_GRID][MAX_GRID], int gridSize) {
     printf("### %d x %d Letter Grid ###\n", gridSize, gridSize);
     
     printf("  +");
+    
 	for(i=0;i<gridSize;i++) {
 		printf(" %d",i);
 	}
+	
 	printf("\n ");
 	
 	for(i=0;i<=gridSize;i++){
 		printf(" +");
 	}
+	
 	printf("\n");
 	
 	for(row=0;row<gridSize;row++){
@@ -221,14 +223,10 @@ void printWordList(char wordList[MAX_WORDLIST][MAX_WORD], int listSize, int matc
 		} else {
 			printf("[X]");
 		}
-		
 		printf("%s\n",wordList[i]);
 	}
 	
-	
 /* TODO: Print the word list with matching status */
-
-
 }
 
 
@@ -256,7 +254,6 @@ int checkWordList(char wordList[MAX_WORDLIST][MAX_WORD], int listSize, int match
 	return status;
 }
 
-
 /* Check whether the input word is in the letter grid in the specified row, column, and direction
    Return
         1 if the input word is in the letter grid in the specified row, column, and direction
@@ -265,11 +262,11 @@ int checkWordList(char wordList[MAX_WORDLIST][MAX_WORD], int listSize, int match
    This function should not print anything, except debugging messages (if any) */
 int checkLetterGrid(char letterGrid[MAX_GRID][MAX_GRID], int gridSize, char inputWord[MAX_WORD], int matchRow, int matchCol, int matchDirection) {
 	int i;
-	int status;
+	int status = 0;
 	int len = strlen(inputWord);
 
 	if(matchDirection == 1) {
-		if(matchRow<=0||matchCol>=gridSize-1) {
+		if(matchRow>=gridSize-1||matchCol<=0) {
 		return -1;
 		}
 		
@@ -278,6 +275,7 @@ int checkLetterGrid(char letterGrid[MAX_GRID][MAX_GRID], int gridSize, char inpu
 				status++;
 			}
 		}
+		
 		if(status == len) {
 			return 1;
 		} else {
@@ -299,7 +297,7 @@ int checkLetterGrid(char letterGrid[MAX_GRID][MAX_GRID], int gridSize, char inpu
 			return 0;
 		}
 	} else if (matchDirection == 3) {
-		if(matchRow>gridSize||matchCol>=gridSize-1) {
+		if(matchRow>=gridSize-1||matchCol>=gridSize-1) {
 			return -1;
 		}
 		
@@ -385,17 +383,15 @@ int checkLetterGrid(char letterGrid[MAX_GRID][MAX_GRID], int gridSize, char inpu
 			return 0;
 		}
 	} else {
-		return -1;
+		return -1;	
 	}
+		
 	/* TODO: Complete the function */
-	
-	
 }
-
 
 /* Display the secret table */
 void printSecretTable(char letterGrid[MAX_GRID][MAX_GRID],char wordList[MAX_WORDLIST][MAX_WORD],int gridSize, int listSize) {
-	int i=0,j=0,dir=0,a=0;
+	int row=0,col=0,dir=1,a=0;
 	int len=0;
 	char word[MAX_WORD];
 
@@ -405,25 +401,25 @@ void printSecretTable(char letterGrid[MAX_GRID][MAX_GRID],char wordList[MAX_WORD
 	
 	for(a=0;a<listSize;a++) {
 		strcpy(word,wordList[a]);
+		//printf("%s\n",word);
+
+		for(row=0;row<gridSize;row++) {
+			for(col=0;col<gridSize;col++) {
+				for(dir=1;dir<=9;dir++) {
 					
-		for(i=0;i<gridSize;i++) {
-			for(j=0;j<gridSize;j++) {
-				for(dir=1;dir<=9;dir++){
-					
-					status = checkLetterGrid(letterGrid,gridSize,word,i,j,dir);
-					
+					status = checkLetterGrid(letterGrid,gridSize,word,row,col,dir);
+						
 					if(status == 1) {
-						printf("%s: R%d C%d D%d\n",word,i,j,dir);
+						printf("%s: R%d C%d D%d\n",word,row,col,dir);
 					}
 				}	
 			}
 		}
+		
 	}
 	
 /* TODO: Complete the function */
 }
-
-
 
 /* The main() function */
 int main()
@@ -455,7 +451,9 @@ int main()
 		[2] = "TREAT"
 	};
 	*/
-    int matchingStatus[MAX_WORDLIST];			/* Each element should be either 0 (not matched) or 1 (matched) */
+	
+	/* Each element should be either 0 (not matched) or 1 (matched) */
+    int matchingStatus[MAX_WORDLIST];			
     char readData;
     char word[MAX_WORD];
     int i;  
@@ -465,13 +463,13 @@ int main()
 	int row_num,col_num,dir;
 	char sectbl[6] = "SECTBL";
 	
-	
 /* TODO: Complete the main() function by invoking the functions declared above */
 
-
-    printf("Read data from file [Y/N]?");     /* Ask the user whether to read the data from file */
-    scanf("%c",&readData);                           /* Read the letter grid and the word list from file or console */
+	/* Ask the user whether to read the data from file */
+    printf("Read data from file [Y/N]?");     
+    scanf("%c",&readData);                           
     
+    /* Read the letter grid and the word list from file or console */
 	if(readData == 'N') {
             gridSize = readLetterGridFromConsole(letterGrid);
             listSize = readWordListFromConsole(wordList);
@@ -483,10 +481,10 @@ int main()
     	exit(1);
 	}
 	
-    for (i=0;i<listSize;i++){               /* Initialize all elements in the matchingStatus array to 0 */
+	/* Initialize all elements in the matchingStatus array to 0 */
+    for (i=0;i<listSize;i++){               
             matchingStatus[i] = 0;
     }
-
 
     /* FOR TESTING: Uncomment the following two statements to print the letter grid and the word list
        You can move them elsewhere after testing
@@ -512,7 +510,7 @@ int main()
 				checkLetter = checkLetterGrid(letterGrid,gridSize,word,row_num,col_num,dir);
 				
 				if(checkLetter == 1) {
-					printf("The word is found!\n\n\n");
+					printf("The word is found!\n\n");
 					for(i=0;i<listSize;i++) {
 						if(strcmp(word,wordList[i])==0) {
 							matchingStatus[i] = 1;
@@ -520,20 +518,20 @@ int main()
 						}
 					}
 				} else if(checkLetter == 0) {
-					printf("The input word cannot be found in the given location.\n\n\n");
+					printf("The input word cannot be found in the given location.\n\n");
 				} else if (checkLetter == -1) {
-					printf("The search exceeds the boundary of the letter grid.\n\n\n");
+					printf("The search exceeds the boundary of the letter grid.\n\n");
 				}
 				
 				printLetterGrid(letterGrid, gridSize);
     			printWordList(wordList, listSize, matchingStatus);
     			
 			} else if(checkWord == -1) {
-				printf("The input word is not in the word list.\n\n\n");
+				printf("The input word is not in the word list.\n\n");
 				printLetterGrid(letterGrid, gridSize);
     			printWordList(wordList, listSize, matchingStatus);
 			} else if (checkWord == 1) {
-				printf("The input word has already been matched before.\n\n\n");
+				printf("The input word has already been matched before.\n\n");
 				printLetterGrid(letterGrid, gridSize);
     			printWordList(wordList, listSize, matchingStatus);
 			}
@@ -541,7 +539,7 @@ int main()
 		
 	}
 
-	printf("You have finished the puzzle.\nCongratulations!\n");
+	printf("You have finished the puzzle.\nCongratulations!");
 	
     return 0;
 }
